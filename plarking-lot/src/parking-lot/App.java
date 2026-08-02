@@ -47,6 +47,39 @@ public class App {
                 + " exitGate=" + closedTicket.getExitGateId()
                 + " amountCharged=" + closedTicket.getAmountCharged()
                 + " status=" + closedTicket.getTicketStatus());
+
+        System.out.println();
+        System.out.println("--- Negative path: lot full ---");
+        // TRUCK capacity is 1 (initial) + 1 (addVehicleType) = 2.
+        EntryGate truckEntryGate = controller.getEntryGates().get(0);
+        Ticket truckTicket1 = truckEntryGate.processEntry("KA-02-1111", VehicleType.TRUCK);
+        truckEntryGate.processEntry("KA-02-2222", VehicleType.TRUCK);
+        try {
+            truckEntryGate.processEntry("KA-02-3333", VehicleType.TRUCK);
+            System.out.println("FAIL: expected lot-full rejection, but entry succeeded");
+        } catch (IllegalStateException e) {
+            System.out.println("PASS: lot-full correctly rejected -> " + e.getMessage());
+        }
+
+        System.out.println();
+        System.out.println("--- Negative path: double exit on same ticket ---");
+        ExitGate truckExitGate = controller.getExitGates().get(0);
+        truckExitGate.processExit(truckTicket1);
+        try {
+            truckExitGate.processExit(truckTicket1);
+            System.out.println("FAIL: expected double-exit rejection, but exit succeeded");
+        } catch (IllegalStateException e) {
+            System.out.println("PASS: double-exit correctly rejected -> " + e.getMessage());
+        }
+
+        System.out.println();
+        System.out.println("--- Negative path: double initialize ---");
+        try {
+            controller.initialize(capacities, 2, 2, pricingStrategy);
+            System.out.println("FAIL: expected double-initialize rejection, but it succeeded");
+        } catch (IllegalStateException e) {
+            System.out.println("PASS: double-initialize correctly rejected -> " + e.getMessage());
+        }
     }
 }
 
