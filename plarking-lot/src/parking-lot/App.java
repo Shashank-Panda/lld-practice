@@ -1,6 +1,52 @@
+import java.util.EnumMap;
+import java.util.Map;
+
+import Strategy.HourlyPricingStrategy;
+import Strategy.PricingStrategy;
+import enums.VehicleType;
+import model.EntryGate;
+import model.ExitGate;
+import model.ParkingLotController;
+import model.Ticket;
+
 public class App {
     public static void main(String[] args) throws Exception {
-        System.out.println("Hello, World!");
+        Map<VehicleType, Integer> capacities = new EnumMap<>(VehicleType.class);
+        capacities.put(VehicleType.CAR, 2);
+        capacities.put(VehicleType.MOTORCYCLE, 2);
+        capacities.put(VehicleType.TRUCK, 1);
+
+        Map<VehicleType, Double> rates = new EnumMap<>(VehicleType.class);
+        rates.put(VehicleType.CAR, 20.0);
+        rates.put(VehicleType.MOTORCYCLE, 10.0);
+        rates.put(VehicleType.TRUCK, 35.0);
+
+        PricingStrategy pricingStrategy = new HourlyPricingStrategy(rates);
+
+        ParkingLotController controller = ParkingLotController.getInstance();
+        controller.initialize(capacities, 2, 2, pricingStrategy);
+
+        // Exercise the new expansion methods.
+        controller.addVehicleType(VehicleType.TRUCK, 1);
+        EntryGate thirdEntryGate = controller.addEntryGate();
+        ExitGate thirdExitGate = controller.addExitGate();
+        System.out.println("Added entry gate #" + controller.getEntryGates().indexOf(thirdEntryGate));
+        System.out.println("Added exit gate #" + controller.getExitGates().indexOf(thirdExitGate));
+
+        EntryGate entryGate1 = controller.getEntryGates().get(0);
+        Ticket ticket = entryGate1.processEntry("KA-01-1234", VehicleType.CAR);
+        System.out.println("Issued ticket: " + ticket.getTicketId()
+                + " entryGate=" + ticket.getEntryGateId()
+                + " entryTime=" + ticket.getEntryTime());
+
+        Thread.sleep(1000);
+
+        ExitGate exitGate1 = controller.getExitGates().get(0);
+        Ticket closedTicket = exitGate1.processExit(ticket);
+        System.out.println("Closed ticket: " + closedTicket.getTicketId()
+                + " exitGate=" + closedTicket.getExitGateId()
+                + " amountCharged=" + closedTicket.getAmountCharged()
+                + " status=" + closedTicket.getTicketStatus());
     }
 }
 
@@ -12,7 +58,7 @@ public class App {
 // 6. The system should handle multiple entry and exit points and support concurrent access.
 
 
-/* 
+/*
 Requirements
 1. # parking lots = 1
 2. # Floor levels = 3
@@ -21,7 +67,7 @@ Requirements
 5. # number of entry points = 2
 6. # number of exit points = 2
 7. # parking spot types = 3 (compact, regular, large) -> enum
-8. 
+8.
 */
 
 /*

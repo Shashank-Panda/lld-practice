@@ -13,6 +13,7 @@ public class ParkingLotController {
     private EnumMap<VehicleType, Integer> occupied;
     private List<EntryGate> entryGates;
     private List<ExitGate> exitGates;
+    private PricingStrategy pricingStrategy;
     private boolean initialized;
 
     private ParkingLotController() {
@@ -48,7 +49,34 @@ public class ParkingLotController {
             exitGates.add(new ExitGate(i, pricingStrategy));
         }
 
+        this.pricingStrategy = pricingStrategy;
         initialized = true;
+    }
+
+    public synchronized void addVehicleType(VehicleType type, int capacity) {
+        requireInitialized();
+        capacities.merge(type, capacity, Integer::sum);
+        occupied.putIfAbsent(type, 0);
+    }
+
+    public synchronized EntryGate addEntryGate() {
+        requireInitialized();
+        EntryGate gate = new EntryGate(entryGates.size() + 1);
+        entryGates.add(gate);
+        return gate;
+    }
+
+    public synchronized ExitGate addExitGate() {
+        requireInitialized();
+        ExitGate gate = new ExitGate(exitGates.size() + 1, pricingStrategy);
+        exitGates.add(gate);
+        return gate;
+    }
+
+    private void requireInitialized() {
+        if (!initialized) {
+            throw new IllegalStateException("ParkingLotController has not been initialized.");
+        }
     }
 
     public List<EntryGate> getEntryGates() {
