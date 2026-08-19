@@ -9,7 +9,6 @@ public abstract class Post {
     private String content;
     private User author;
     private Instant createdAt;
-    // private Instant updatedAt;
 
     protected Post(String content, User author) {
         this.id = java.util.UUID.randomUUID().toString();
@@ -17,4 +16,21 @@ public abstract class Post {
         this.author = author;
         this.createdAt = Instant.now();
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
 }

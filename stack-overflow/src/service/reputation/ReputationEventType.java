@@ -1,0 +1,13 @@
+package service.reputation;
+
+public enum ReputationEventType {
+    QUESTION_POSTED,
+    ANSWER_POSTED,
+    COMMENT_POSTED,
+    QUESTION_UPVOTED,
+    ANSWER_UPVOTED,
+    ANSWER_ACCEPTED,
+    ANSWER_ACCEPTED_ASKER_BONUS,
+    POST_DOWNVOTED,
+    DOWNVOTE_CAST_PENALTY
+}

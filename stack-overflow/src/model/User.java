@@ -45,4 +45,12 @@ public class User {
     public String getShortSummary() {
         return shortSummary;
     }
+
+    public double getReputationScore() {
+        return reputation_score;
+    }
+
+    public synchronized void addReputation(double delta) {
+        this.reputation_score += delta;
+    }
 }
