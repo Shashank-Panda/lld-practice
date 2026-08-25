@@ -1,6 +1,6 @@
 package service.reputation;
 
-import enums.Vote;
+import enums.VoteType;
 import model.User;
 import model.post.Answer;
 import model.post.Post;
@@ -26,10 +26,10 @@ public class ReputationManager {
     }
 
     // target must be a Votable post (Question or Answer) - caller is responsible for that
-    public void onVoteCast(Post target, User voter, Vote voteType) {
+    public void onVoteCast(Post target, User voter, VoteType voteType) {
         User postOwner = target.getAuthor();
 
-        if (voteType == Vote.UPVOTE) {
+        if (voteType == VoteType.UPVOTE) {
             if (target instanceof Question) {
                 applyDelta(postOwner, ReputationEventType.QUESTION_UPVOTED);
             } else if (target instanceof Answer) {

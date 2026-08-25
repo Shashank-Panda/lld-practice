@@ -1,9 +1,9 @@
 package model.post;
 
-import enums.Vote;
+import enums.VoteType;
 import model.User;
 
 public interface Votable {
-    void vote(User user, Vote voteType);
+    boolean vote(User user, VoteType voteType);
     int getVoteCount();
 }

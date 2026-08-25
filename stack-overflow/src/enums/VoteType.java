@@ -1,6 +1,6 @@
 package enums;
 
-public enum Vote {
+public enum VoteType {
     UPVOTE,
     DOWNVOTE
 }

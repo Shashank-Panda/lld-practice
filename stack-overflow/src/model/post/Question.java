@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 
-import enums.Vote;
+import enums.VoteType;
 import model.Tag;
 import model.User;
 
@@ -13,7 +13,8 @@ public class Question extends Post implements Votable {
     private Set<Tag> tags;
     private List<Answer> answers = new ArrayList<>();
     private Answer acceptedAnswer;
-    private final VoteBox voteBox = new VoteBox();
+    private final VoteBox voteBox = new VoteBox(this);
+    private final CommentBox commentBox = new CommentBox();
 
     public Question(String title, String content, User author, Set<Tag> tags) {
         super(content, author);
@@ -47,12 +48,20 @@ public class Question extends Post implements Votable {
     }
 
     @Override
-    public void vote(User user, Vote voteType) {
-        voteBox.vote(user, voteType);
+    public boolean vote(User user, VoteType voteType) {
+        return voteBox.vote(user, voteType);
     }
 
     @Override
     public int getVoteCount() {
         return voteBox.getVoteCount();
+    }
+
+    public void addComment(Comment comment) {
+        commentBox.addComment(comment);
+    }
+
+    public List<Comment> getComments() {
+        return commentBox.getComments();
     }
 }

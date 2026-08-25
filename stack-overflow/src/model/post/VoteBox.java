@@ -1,22 +1,34 @@
 package model.post;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import enums.Vote;
+import enums.VoteType;
 import model.User;
 
 public class VoteBox {
-    private final Map<User, Vote> votes = new HashMap<>();
+    private final Post owner;
+    private final Map<User, Vote> votes = new ConcurrentHashMap<>();
 
-    public void vote(User user, Vote voteType) {
-        votes.put(user, voteType);
+    public VoteBox(Post owner) {
+        this.owner = owner;
+    }
+
+    // returns false if the user already voted on this post - vote is rejected
+    public boolean vote(User user, VoteType voteType) {
+        Vote vote = new Vote(user, owner, voteType);
+        return votes.putIfAbsent(user, vote) == null;
+    }
+
+    public Collection<Vote> getVotes() {
+        return votes.values();
     }
 
     public int getVoteCount() {
         int count = 0;
         for (Vote v : votes.values()) {
-            count += (v == Vote.UPVOTE) ? 1 : -1;
+            count += (v.getVoteType() == VoteType.UPVOTE) ? 1 : -1;
         }
         return count;
     }
