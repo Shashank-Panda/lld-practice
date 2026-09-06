@@ -1,4 +1,4 @@
-package root;
+package vendingmachine;
 
 import entity.Inventory;
 import entity.Item;
@@ -57,5 +57,14 @@ public class VendingMachine {
 
     public Inventory getInventory() {
         return inventory;
+    }
+
+    public String getSelectedItemCode() {
+        return selectedItemCode;
+    }
+
+    public void clearTransaction() {
+        balance = 0;
+        selectedItemCode = null;
     }
 }

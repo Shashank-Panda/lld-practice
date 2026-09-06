@@ -2,7 +2,7 @@ package state;
 
 import entity.Item;
 import enums.Coin;
-import root.VendingMachine;
+import vendingmachine.VendingMachine;
 
 public class IdleState implements VendingMachineState {
     private final VendingMachine machine;
@@ -13,34 +13,49 @@ public class IdleState implements VendingMachineState {
 
     @Override
     public void insertCoin(Coin coin) {
-        // Transition to MoneyEnteredState
-        // Update balance
+        throw new IllegalStateException(
+        "Cannot insert coin before selecting an item"
+    );
     }
 
     @Override
     public void selectItem(String itemCode) {
-        // select item and transition to itemselected state
-        Item item = machine.getInventory().getItem(itemCode);
-        if (item != null && machine.getInventory().isAvailable(itemCode)) {
-            machine.setState(new ItemSelectedState(machine, item));
-        } else {
-            // Handle item not available or invalid selection
+                Item item = machine.getInventory().getItem(itemCode);
+
+        if (item == null) {
+            throw new IllegalArgumentException(
+                "Invalid item code: " + itemCode
+            );
         }
+
+        if (!machine.getInventory().isAvailable(itemCode)) {
+            throw new IllegalStateException(
+                "Item is out of stock: " + itemCode
+            );
+        }
+
+        machine.setState(new ItemSelectedState(machine, item));
     }
 
     @Override
     public void dispense() {
-        // Cannot dispense in IdleState
+        throw new IllegalStateException(
+            "Cannot dispense while machine is idle"
+        );
     }
 
     @Override
     public void refund() {
-        // Cannot refund in IdleState
+        throw new IllegalStateException(
+            "Cannot refund while machine is idle"
+        );
     }
 
     @Override
     public void returnChange() {
-        // Cannot return change in IdleState
+        throw new IllegalStateException(
+            "Cannot return change while machine is idle"
+        );
     }
 
 }

@@ -2,9 +2,10 @@ package state;
 
 import entity.Item;
 import enums.Coin;
-import root.VendingMachine;
+import vendingmachine.VendingMachine;
 
 public class ItemSelectedState implements VendingMachineState {
+
     private final VendingMachine vendingMachine;
     private final Item item;
 
@@ -12,30 +13,34 @@ public class ItemSelectedState implements VendingMachineState {
         this.vendingMachine = vendingMachine;
         this.item = item;
     }
-    
+
     @Override
     public void insertCoin(Coin coin) {
-        // Implementation for inserting coin in ItemSelectedState
+        vendingMachine.addBalance(coin.getValue());
+        vendingMachine.setState(new MoneyEnteredState(vendingMachine));
     }
 
     @Override
     public void selectItem(String itemCode) {
-        // Implementation for selecting item in ItemSelectedState
+        throw new IllegalStateException(
+                "An item has already been selected");
     }
 
     @Override
     public void dispense() {
-        // Implementation for dispensing item in ItemSelectedState
+        throw new IllegalStateException(
+                "Cannot dispense before inserting money");
     }
 
     @Override
     public void refund() {
-        // Implementation for refunding in ItemSelectedState
+        throw new IllegalStateException(
+                "No money has been inserted");
     }
 
     @Override
     public void returnChange() {
-        // Implementation for returning change in ItemSelectedState
+        throw new IllegalStateException(
+                "No change to return");
     }
-
 }
