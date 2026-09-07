@@ -34,6 +34,7 @@ public class IdleState implements VendingMachineState {
             );
         }
 
+        machine.setSelectedItemCode(itemCode);
         machine.setState(new ItemSelectedState(machine, item));
     }
 

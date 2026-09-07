@@ -7,9 +7,9 @@ import vendingmachine.VendingMachine;
 public class DispensingState implements VendingMachineState {
 
     private final VendingMachine vendingMachine;
-    private final double change;
+    private final int change;
 
-    public DispensingState(VendingMachine vendingMachine, double change) {
+    public DispensingState(VendingMachine vendingMachine, int change) {
         this.vendingMachine = vendingMachine;
         this.change = change;
     }
@@ -35,7 +35,7 @@ public class DispensingState implements VendingMachineState {
 
         Item item = vendingMachine.getInventory().getItem(itemCode);
 
-        if (item == null) {
+        if (item == null || !vendingMachine.getInventory().isAvailable(itemCode)) {
             throw new IllegalStateException(
                 "Selected item is no longer available"
             );
@@ -49,7 +49,7 @@ public class DispensingState implements VendingMachineState {
 
         // Return change
         if (change > 0) {
-            System.out.println("Returning change: " + change);
+            System.out.println("Returning change: " + change + " cents");
         }
 
         // Clear current transaction

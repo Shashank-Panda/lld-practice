@@ -3,19 +3,19 @@ package entity;
 public class Item {
     private String name;
     private String code;
-    private double price;
+    private int priceInCents;
 
-    public Item(String name, String code, double price) {
+    public Item(String name, String code, int priceInCents) {
         this.code = code;
         this.name = name;
-        this.price = price;
+        this.priceInCents = priceInCents;
     }
 
     public String getName() {
         return name;
     }
 
-    public double getPrice() {
-        return price;
+    public int getPriceInCents() {
+        return priceInCents;
     }
 }

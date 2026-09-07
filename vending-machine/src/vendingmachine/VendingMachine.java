@@ -13,9 +13,9 @@ public class VendingMachine {
 
     public VendingMachine() {
         // Initialize the vending machine with some items
-        inventory.addItem("A1", new Item("Soda", "A1", 1.50), 10);
-        inventory.addItem("B2", new Item("Chips", "B2", 1.00), 5);
-        inventory.addItem("C3", new Item("Candy", "C3", 0.75), 20);
+        inventory.addItem("A1", new Item("Soda", "A1", 150), 10);
+        inventory.addItem("B2", new Item("Chips", "B2", 100), 5);
+        inventory.addItem("C3", new Item("Candy", "C3", 75), 20);
         this.currentState = new IdleState(this);
     }
 
@@ -61,6 +61,10 @@ public class VendingMachine {
 
     public String getSelectedItemCode() {
         return selectedItemCode;
+    }
+
+    public void setSelectedItemCode(String selectedItemCode) {
+        this.selectedItemCode = selectedItemCode;
     }
 
     public void clearTransaction() {

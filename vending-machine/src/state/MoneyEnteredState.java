@@ -17,8 +17,8 @@ public class MoneyEnteredState implements VendingMachineState {
         String itemCode = vendingMachine.getSelectedItemCode();
         Item item = vendingMachine.getInventory().getItem(itemCode);
 
-        if (vendingMachine.getBalance() >= item.getPrice()) {
-            double change = vendingMachine.getBalance() - item.getPrice();
+        if (vendingMachine.getBalance() >= item.getPriceInCents()) {
+            int change = vendingMachine.getBalance() - item.getPriceInCents();
             vendingMachine.setState(new DispensingState(vendingMachine, change));
         }
     }
@@ -38,7 +38,9 @@ public class MoneyEnteredState implements VendingMachineState {
     @Override
     public void refund() {
         // Money has been inserted, so refund is valid.
-        vendingMachine.returnChange();
+        int refundedAmount = vendingMachine.getBalance();
+        System.out.println("Refunding: " + refundedAmount + " cents");
+        vendingMachine.clearTransaction();
         vendingMachine.setState(new IdleState(vendingMachine));
     }
 
