@@ -7,6 +7,7 @@ import state.VendingMachineState;
 
 public class VendingMachine {
     private final Inventory inventory = new Inventory();
+    private final Object lock = new Object();
     private VendingMachineState currentState;
     private int balance = 0;
     private String selectedItemCode;
@@ -20,11 +21,15 @@ public class VendingMachine {
     }
 
     public void setState(VendingMachineState state) {
-        this.currentState = state;
+        synchronized (lock) {
+            this.currentState = state;
+        }
     }
 
     public void insertCoin(enums.Coin coin) {
-        currentState.insertCoin(coin);
+        synchronized (lock) {
+            currentState.insertCoin(coin);
+        }
     }
 
     public void addItem(String sku, Item item, int quantity) {
@@ -32,27 +37,39 @@ public class VendingMachine {
     }
 
     public void selectItem(String itemCode) {
-        currentState.selectItem(itemCode);
+        synchronized (lock) {
+            currentState.selectItem(itemCode);
+        }
     }
 
     public void dispense() {
-        currentState.dispense();
+        synchronized (lock) {
+            currentState.dispense();
+        }
     }
 
     public void refund() {
-        currentState.refund();
+        synchronized (lock) {
+            currentState.refund();
+        }
     }
 
     public void returnChange() {
-        currentState.returnChange();
+        synchronized (lock) {
+            currentState.returnChange();
+        }
     }
 
     public void addBalance(int amount) {
-        balance += amount;
+        synchronized (lock) {
+            balance += amount;
+        }
     }
 
     public int getBalance() {
-        return balance;
+        synchronized (lock) {
+            return balance;
+        }
     }
 
     public Inventory getInventory() {
@@ -60,15 +77,21 @@ public class VendingMachine {
     }
 
     public String getSelectedItemCode() {
-        return selectedItemCode;
+        synchronized (lock) {
+            return selectedItemCode;
+        }
     }
 
     public void setSelectedItemCode(String selectedItemCode) {
-        this.selectedItemCode = selectedItemCode;
+        synchronized (lock) {
+            this.selectedItemCode = selectedItemCode;
+        }
     }
 
     public void clearTransaction() {
-        balance = 0;
-        selectedItemCode = null;
+        synchronized (lock) {
+            balance = 0;
+            selectedItemCode = null;
+        }
     }
 }

@@ -35,14 +35,19 @@ public class DispensingState implements VendingMachineState {
 
         Item item = vendingMachine.getInventory().getItem(itemCode);
 
-        if (item == null || !vendingMachine.getInventory().isAvailable(itemCode)) {
+        if (item == null) {
             throw new IllegalStateException(
                 "Selected item is no longer available"
             );
         }
 
-        // Reduce stock
-        vendingMachine.getInventory().reduceStock(itemCode);
+        // Atomically commit the sale: fails if stock was depleted concurrently
+        boolean dispensed = vendingMachine.getInventory().reduceStockIfAvailable(itemCode);
+        if (!dispensed) {
+            throw new IllegalStateException(
+                "Selected item is no longer available"
+            );
+        }
 
         // Dispense item
         System.out.println("Dispensing: " + item.getName());

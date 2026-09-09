@@ -1,4 +1,7 @@
+import java.util.concurrent.atomic.AtomicInteger;
+
 import enums.Coin;
+import entity.Item;
 import vendingmachine.VendingMachine;
 
 public class App {
@@ -76,6 +79,62 @@ public class App {
         } catch (IllegalStateException e) {
             System.out.println("Caught expected exception: " + e.getMessage());
         }
+
+        System.out.println("\n=== Case 8: Concurrent purchases racing for limited stock ===");
+        VendingMachine m8 = new VendingMachine();
+        m8.addItem("F6", new Item("Gum", "F6", 75), 3); // only 3 units, 8 threads will race for them
+
+        int threadCount = 8;
+        AtomicInteger successCount = new AtomicInteger();
+        Thread[] buyers = new Thread[threadCount];
+        for (int i = 0; i < threadCount; i++) {
+            buyers[i] = new Thread(() -> {
+                while (true) {
+                    try {
+                        m8.selectItem("F6");
+                    } catch (IllegalStateException e) {
+                        if (e.getMessage() != null && e.getMessage().startsWith("Item is out of stock")) {
+                            return; // no stock left, give up
+                        }
+                        Thread.yield(); // another session is active, retry shortly
+                        continue;
+                    }
+                    m8.insertCoin(Coin.QUARTER);
+                    m8.insertCoin(Coin.QUARTER);
+                    m8.insertCoin(Coin.QUARTER);
+                    m8.dispense();
+                    successCount.incrementAndGet();
+                    return;
+                }
+            });
+        }
+        for (Thread t : buyers) t.start();
+        for (Thread t : buyers) t.join();
+        System.out.println("Successful purchases: " + successCount.get() + " (expected 3)");
+        System.out.println("F6 stock remaining: " + m8.getInventory().getStockCount("F6") + " (expected 0)");
+
+        System.out.println("\n=== Case 9: Restocking concurrently with an in-flight purchase (different item) ===");
+        VendingMachine m9 = new VendingMachine(); // A1 (Soda) starts at 10 units
+        Thread purchaser = new Thread(() -> {
+            for (int i = 0; i < 3; i++) {
+                m9.selectItem("C3"); // Candy, unrelated SKU to the one being restocked
+                m9.insertCoin(Coin.QUARTER);
+                m9.insertCoin(Coin.QUARTER);
+                m9.insertCoin(Coin.QUARTER);
+                m9.dispense();
+            }
+        });
+        Thread restocker = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                m9.addItem("A1", new Item("Soda", "A1", 150), 2); // add 2 units, 5 times
+            }
+        });
+        purchaser.start();
+        restocker.start();
+        purchaser.join();
+        restocker.join();
+        System.out.println("A1 stock after concurrent restock: " + m9.getInventory().getStockCount("A1") + " (expected 20 = 10 + 5*2)");
+        System.out.println("C3 stock after concurrent purchases: " + m9.getInventory().getStockCount("C3") + " (expected 17 = 20 - 3)");
     }
 }
 
